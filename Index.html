@@ -520,6 +520,36 @@ function render(){
         </div>
         <button style="padding:8px 14px;background:#fff;border:1.5px solid #e5e5e5;border-radius:10px;color:#555;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="exportCSV();">⬇ Export CSV</button>
       </div>
+
+      <!-- RECOVERY BUTTON -->
+      <div style="background:#FFF8F0;border:1.5px solid #FF4D0033;border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:12px;font-weight:700;color:#FF4D00;margin-bottom:6px;">🔍 Data Recovery</div>
+        <div style="font-size:11px;color:#888;margin-bottom:10px;">Tap below to check all localStorage keys for any saved sessions</div>
+        <button style="width:100%;padding:10px;background:#FF4D00;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;margin-bottom:8px;" onclick="
+          const keys=['wt_h4','wt_h3','wt_h2','wt_hist2','wt_hist','workout_history'];
+          let found=[];
+          keys.forEach(k=>{
+            try{
+              const v=localStorage.getItem(k);
+              if(v){const d=JSON.parse(v);if(Array.isArray(d)&&d.length>0){found.push({key:k,count:d.length,data:d});}}
+            }catch(e){}
+          });
+          if(found.length===0){
+            document.getElementById('recovery-output').innerHTML='<div style=\'color:#aaa;font-size:12px;\'>No saved sessions found in any storage key.</div>';
+          } else {
+            // Merge all found data into current storage
+            let all=[];
+            found.forEach(f=>all=[...all,...f.data]);
+            const seen=new Set();
+            all=all.filter(h=>{if(seen.has(h.id))return false;seen.add(h.id);return true;});
+            all.sort((a,b)=>b.date.localeCompare(a.date));
+            ss('wt_h4',all); ss('wt_h3',all);
+            document.getElementById('recovery-output').innerHTML='<div style=\'color:#2D9B6F;font-size:12px;font-weight:700;\'>✓ Found '+all.length+' sessions across '+found.map(f=>f.key).join(', ')+' — restored!</div>';
+            setTimeout(()=>render(),1500);
+          }
+        ">🔍 Search All Storage & Restore</button>
+        <div id="recovery-output"></div>
+      </div>
       <div style="display:flex;overflow-x:auto;gap:6px;margin-bottom:14px;">
         ${["All",...DAYS].map(d=>{
           const a=S.histFilter===d;
