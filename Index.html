@@ -155,8 +155,17 @@ let S={
 
 function ls(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}}
 function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-function getSess(){return ls("wt_s3",{});}  function setSess(s){ss("wt_s3",s);}
-function getHist(){return ls("wt_h3",[]);}  function setHist(h){ss("wt_h3",h);}
+function getSess(){const s4=ls("wt_s4",{});const s3=ls("wt_s3",{});return Object.assign({},s3,s4);}
+function setSess(s){ss("wt_s4",s);ss("wt_s3",s);}
+function getHist(){
+  const h4=ls("wt_h4",[]);
+  const h3=ls("wt_h3",[]);
+  // Merge both, deduplicate by id
+  const merged=[...h4,...h3];
+  const seen=new Set();
+  return merged.filter(h=>{if(seen.has(h.id))return false;seen.add(h.id);return true;});
+}
+function setHist(h){ss("wt_h4",h);ss("wt_h3",h);}
 function getMeas(){return ls("wt_meas",[]);} function setMeas(m){ss("wt_meas",m);}
 function getWrist(){return ls("wt_wrist",[]);} function setWrist(w){ss("wt_wrist",w);}
 function getPRs(){return ls("wt_prs",{});}  function setPRs(p){ss("wt_prs",p);}
