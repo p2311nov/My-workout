@@ -155,8 +155,8 @@ let S={
 
 function ls(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}}
 function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-function getSess(){return ls("wt_s4",{});}  function setSess(s){ss("wt_s4",s);}
-function getHist(){return ls("wt_h4",[]);}  function setHist(h){ss("wt_h4",h);}
+function getSess(){return ls("wt_s3",{});}  function setSess(s){ss("wt_s3",s);}
+function getHist(){return ls("wt_h3",[]);}  function setHist(h){ss("wt_h3",h);}
 function getMeas(){return ls("wt_meas",[]);} function setMeas(m){ss("wt_meas",m);}
 function getWrist(){return ls("wt_wrist",[]);} function setWrist(w){ss("wt_wrist",w);}
 function getPRs(){return ls("wt_prs",{});}  function setPRs(p){ss("wt_prs",p);}
@@ -292,11 +292,14 @@ function exportCSV(){
   a.download=`workout-${todayStr()}.csv`; a.click();
 }
 
-function stars(rating,cbStr){
+function stars(rating,ei,si,isGrip,day){
   let h="";
   for(let i=1;i<=5;i++){
     const lit=i<=Number(rating);
-    h+=`<button class="star-btn" style="color:${lit?"#FFD600":"#ddd"};" onclick="${cbStr.replace('__STAR__',i)}"">★</button>`;
+    const cb=isGrip
+      ?`setGV('srat',${ei},${i}===Number(getGV('srat',${ei},${si}))?0:${i},${si});render();`
+      :`sv('${day}','srat',${ei},${i}===Number(gv('${day}','srat',${ei},${si}))?0:${i},${si});render();`;
+    h+=`<button class="star-btn" style="color:${lit?"#FFD600":"#ddd"};" onclick="${cb}">★</button>`;
   }
   return h;
 }
@@ -316,7 +319,6 @@ function renderSetRows(ex,gi_or_ei,isGrip,dc){
     const repPH=ex.reps.includes("-")?ex.reps.split("-")[1]:ex.reps;
     const swCB=isGrip?`setGV('sw',${gi_or_ei},this.value,${si});`:`sv('${S.day}','sw',${gi_or_ei},this.value,${si});`;
     const srCB=isGrip?`setGV('sr',${gi_or_ei},this.value,${si});`:`sv('${S.day}','sr',${gi_or_ei},this.value,${si});`;
-    const sratCB=isGrip?`setGV('srat',${gi_or_ei},__STAR__===Number(getGV('srat',${gi_or_ei},${si}))?0:__STAR__,${si});render();`:`sv('${S.day}','srat',${gi_or_ei},__STAR__==Number(gv('${S.day}','srat',${gi_or_ei},${si}))?0:__STAR__,${si});render();`;
     const tickCB=isGrip?
       `const wd=!!getGV('set',${gi_or_ei},${si});setGV('set',${gi_or_ei},!wd,${si});if(!wd)startTimer(${ex.restSec},'grip-${gi_or_ei}');else{clearInterval(timerInterval);document.getElementById('timer-widget').style.display='none';}render();`:
       `const wd=!!gv('${S.day}','set',${gi_or_ei},${si});sv('${S.day}','set',${gi_or_ei},!wd,${si});if(!wd){checkAndSetPR('${S.day}',${gi_or_ei},${si});startTimer(${ex.restSec},'${S.day}-${gi_or_ei}');}else{clearInterval(timerInterval);document.getElementById('timer-widget').style.display='none';}render();`;
@@ -333,7 +335,7 @@ function renderSetRows(ex,gi_or_ei,isGrip,dc){
     html+=`<input class="set-input" type="number" placeholder="${repPH}" value="${rv}" style="width:36px;${isDone?`border-color:${dc}44;`:""}" oninput="${srCB}"/>
       <span style="font-size:9px;color:#aaa;flex-shrink:0;">reps</span>
       ${setVol>0?`<span style="font-size:9px;color:${dc};flex-shrink:0;background:${dc}0d;padding:2px 5px;border-radius:5px;">${Math.round(setVol)}kg</span>`:"<div style='flex:1'></div>"}
-      <div style="display:flex;gap:1px;flex-shrink:0;">${stars(rat,sratCB)}</div>
+      <div style="display:flex;gap:1px;flex-shrink:0;">${stars(rat,gi_or_ei,si,isGrip,S.day)}</div>
       <button class="tick-btn" style="${isDone?`background:${dc};border-color:${dc};color:#fff;`:`color:#ccc;`}" onclick="${tickCB}">${isDone?"✓":"○"}</button>
     </div>`;
   }
