@@ -4,131 +4,181 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="My Workout"/>
 <title>My PPL Workout Tracker</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{background:#0a0a0a;color:#f0f0f0;font-family:Georgia,serif;min-height:100vh;padding-bottom:80px;}
-button{cursor:pointer;font-family:Georgia,serif;}
-textarea,input{font-family:Georgia,serif;}
+body{background:#f5f5f7;color:#1a1a1a;font-family:-apple-system,Georgia,serif;min-height:100vh;padding-bottom:80px;}
+button{cursor:pointer;font-family:-apple-system,Georgia,serif;}
+textarea,input{font-family:-apple-system,Georgia,serif;}
 ::-webkit-scrollbar{display:none;}
-.top-nav{display:flex;background:#0d0d0d;border-bottom:1px solid #1e1e1e;position:sticky;top:0;z-index:100;}
-.nav-btn{flex:1;padding:14px 0;background:none;border:none;border-bottom:2px solid transparent;color:#555;font-size:13px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;}
-.day-scroll{display:flex;overflow-x:auto;padding:10px 14px;gap:6px;}
-.day-btn{flex-shrink:0;padding:7px 12px;border-radius:20px;border:2px solid #1e1e1e;background:#111;color:#555;font-size:11px;font-weight:bold;letter-spacing:1px;line-height:1.6;}
-.ex-card{background:#111;border-radius:14px;border:1px solid #1c1c1c;overflow:hidden;margin-bottom:10px;}
-.set-row{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:9px;background:#181818;border:1px solid #242424;transition:all 0.15s;margin-bottom:5px;}
-.set-row.done{background:rgba(255,77,0,0.08);}
-.set-input{padding:4px 6px;background:#111;border:1px solid #2a2a2a;border-radius:6px;color:#eee;font-size:12px;outline:none;}
-.star-btn{background:none;border:none;font-size:15px;padding:0 1px;color:#333;transition:color 0.1s;}
-.star-btn.lit{color:#FFD600;}
-.tick-btn{width:34px;height:34px;border-radius:8px;border:2px solid #333;background:#111;color:#444;font-size:13px;font-weight:bold;flex-shrink:0;}
-.tick-btn.done{color:#fff;}
+.top-nav{display:flex;background:#fff;border-bottom:1px solid #e5e5e5;position:sticky;top:0;z-index:100;overflow-x:auto;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.nav-btn{flex-shrink:0;padding:12px 14px;background:none;border:none;border-bottom:3px solid transparent;color:#999;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;}
+.day-scroll{display:flex;overflow-x:auto;padding:10px 14px;gap:6px;background:#fff;border-bottom:1px solid #eee;}
+.day-btn{flex-shrink:0;padding:8px 14px;border-radius:20px;border:2px solid #e5e5e5;background:#f5f5f7;color:#999;font-size:11px;font-weight:700;letter-spacing:0.5px;}
+.ex-card{background:#fff;border-radius:16px;border:1px solid #eee;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.set-row{display:flex;align-items:center;gap:5px;padding:8px 10px;border-radius:10px;background:#f9f9f9;border:1px solid #eee;transition:all 0.15s;margin-bottom:5px;}
+.set-input{padding:5px 7px;background:#fff;border:1.5px solid #e5e5e5;border-radius:8px;color:#1a1a1a;font-size:12px;outline:none;}
+.set-input:focus{border-color:#aaa;}
+.star-btn{background:none;border:none;font-size:15px;padding:0 1px;transition:color 0.1s;}
+.tick-btn{width:34px;height:34px;border-radius:8px;border:2px solid #ddd;background:#fff;color:#ccc;font-size:13px;font-weight:bold;flex-shrink:0;}
 .save-btn{width:100%;padding:15px;border-radius:14px;border:none;color:#fff;font-size:15px;font-weight:bold;letter-spacing:1px;}
-.card{background:#111;border-radius:14px;border:1px solid #1c1c1c;padding:14px;}
+.card{background:#fff;border-radius:16px;border:1px solid #eee;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 .section{padding:6px 14px;}
-.filter-btn{flex-shrink:0;padding:6px 12px;border-radius:16px;border:1px solid #1e1e1e;background:#111;color:#444;font-size:11px;font-weight:bold;}
+.filter-btn{flex-shrink:0;padding:6px 12px;border-radius:16px;border:1.5px solid #e5e5e5;background:#fff;color:#999;font-size:11px;font-weight:700;}
+.timer-ring{position:fixed;bottom:20px;right:20px;z-index:200;background:#fff;border-radius:50%;width:72px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+.meas-input{width:100%;padding:9px 11px;background:#f9f9f9;border:1.5px solid #e5e5e5;border-radius:10px;color:#1a1a1a;font-size:13px;outline:none;margin-top:5px;}
+.grip-set-row{display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:9px;background:#f9f9f9;border:1.5px solid #eee;margin-bottom:5px;transition:all 0.15s;}
 </style>
 </head>
 <body>
 <div id="app"></div>
+<div id="timer-widget" style="display:none;" class="timer-ring">
+  <div id="timer-text" style="font-size:18px;font-weight:bold;"></div>
+  <div style="font-size:9px;color:#999;letter-spacing:1px;margin-top:1px;">REST</div>
+</div>
+
 <script>
 const PLAN={
-  Monday:{name:"PUSH 1",color:"#FF4D00",exercises:[
-    {name:"Barbell Bench Press",sets:4,reps:"8-12",load:"HEAVY",loadNote:"Progressive overload — increase weight weekly",tfcc:false},
-    {name:"Dumbbell Shoulder Press",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Pyramid up each set",tfcc:false},
-    {name:"Cable Fly Low to High",sets:3,reps:"12",load:"MODERATE",loadNote:"Feel the stretch & squeeze, not heavy",tfcc:false},
-    {name:"Rope Pushdown",sets:3,reps:"12",load:"MODERATE",loadNote:"Mind-muscle connection, feel the tricep",tfcc:false},
-    {name:"Lateral Raises",sets:3,reps:"12-15",load:"LIGHT",loadNote:"5-8kg is enough, burn is the goal",tfcc:false},
-    {name:"Plank",sets:3,reps:"40 sec",load:"BODYWEIGHT",loadNote:"ABS — squeeze core throughout",tfcc:false},
-    {name:"Leg Raises",sets:3,reps:"12",load:"BODYWEIGHT",loadNote:"ABS — slow and controlled",tfcc:false},
+  "Push 1":{color:"#FF4D00",exercises:[
+    {name:"Barbell Bench Press",sets:4,reps:"8-12",load:"HEAVY",loadNote:"Progressive overload — increase weight weekly",tfcc:false,weightType:"total",weightHint:"Total inc. 20kg bar",restSec:150},
+    {name:"Dumbbell Shoulder Press",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Pyramid up each set",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:90},
+    {name:"Cable Fly Low to High",sets:3,reps:"12",load:"MODERATE",loadNote:"Feel the stretch & squeeze",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Rope Pushdown",sets:3,reps:"12",load:"MODERATE",loadNote:"Mind-muscle connection, feel the tricep",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Lateral Raises",sets:3,reps:"12-15",load:"LIGHT",loadNote:"5-8kg is enough, burn is the goal",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:60},
+    {name:"Plank",sets:3,reps:"40 sec",load:"BODYWEIGHT",loadNote:"ABS — squeeze core throughout",tfcc:false,weightType:"none",restSec:60},
+    {name:"Leg Raises",sets:3,reps:"12",load:"BODYWEIGHT",loadNote:"ABS — slow and controlled",tfcc:false,weightType:"none",restSec:60},
   ]},
-  Tuesday:{name:"PULL 1",color:"#00B4D8",exercises:[
-    {name:"Deadlift",sets:4,reps:"6-8",load:"HEAVY",loadNote:"Use hooks — primary mass builder",tfcc:true},
-    {name:"Lat Pulldown (Neutral Grip)",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — neutral grip only for TFCC",tfcc:true},
-    {name:"Seated Cable Row",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — squeeze at end of each rep",tfcc:true},
-    {name:"Face Pulls",sets:3,reps:"15",load:"LIGHT",loadNote:"Light weight, focus on rear delt squeeze",tfcc:false},
-    {name:"Dumbbell Shrugs",sets:3,reps:"12-15",load:"MODERATE",loadNote:"Hold 1-2 sec at top for traps",tfcc:false},
-    {name:"Dumbbell Bicep Curl",sets:3,reps:"10-12",load:"MODERATE",loadNote:"8-10kg, full range of motion",tfcc:false},
-    {name:"Cable Crunches",sets:3,reps:"15",load:"MODERATE",loadNote:"ABS — controlled descent",tfcc:false},
-    {name:"Russian Twists",sets:3,reps:"20",load:"BODYWEIGHT",loadNote:"ABS — slow rotation",tfcc:false},
+  "Pull 1":{color:"#0077CC",exercises:[
+    {name:"Deadlift",sets:4,reps:"6-8",load:"HEAVY",loadNote:"Use hooks — primary mass builder",tfcc:true,weightType:"total",weightHint:"Total inc. 20kg bar",restSec:180},
+    {name:"Lat Pulldown (Neutral Grip)",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — neutral grip for TFCC",tfcc:true,weightType:"total",weightHint:"Stack weight",restSec:90},
+    {name:"Seated Cable Row",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — squeeze at end",tfcc:true,weightType:"total",weightHint:"Stack weight",restSec:90},
+    {name:"Face Pulls",sets:3,reps:"15",load:"LIGHT",loadNote:"Light weight, focus on rear delt squeeze",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Dumbbell Shrugs",sets:3,reps:"12-15",load:"MODERATE",loadNote:"Hold 1-2 sec at top for traps",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:60},
+    {name:"Dumbbell Bicep Curl",sets:3,reps:"10-12",load:"MODERATE",loadNote:"8-10kg, full range of motion",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:60},
+    {name:"Cable Crunches",sets:3,reps:"15",load:"MODERATE",loadNote:"ABS — controlled descent",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Russian Twists",sets:3,reps:"20",load:"BODYWEIGHT",loadNote:"ABS — slow rotation",tfcc:false,weightType:"none",restSec:45},
   ]},
-  Wednesday:{name:"LEGS 1",color:"#7B2FBE",exercises:[
-    {name:"Barbell Squat",sets:4,reps:"8-10",load:"HEAVY",loadNote:"Primary leg mass builder — go heavy",tfcc:false},
-    {name:"Romanian Deadlift",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — feel hamstring stretch",tfcc:true},
-    {name:"Leg Press",sets:3,reps:"10-12",load:"HEAVY",loadNote:"Go heavy here, safe on wrists",tfcc:false},
-    {name:"Leg Curl",sets:3,reps:"12",load:"MODERATE",loadNote:"Slow and controlled, feel the hamstring",tfcc:false},
-    {name:"Calf Raises",sets:4,reps:"15-20",load:"MODERATE",loadNote:"Pause at top and bottom each rep",tfcc:false},
-    {name:"Plank",sets:3,reps:"45 sec",load:"BODYWEIGHT",loadNote:"ABS — longer hold than Monday",tfcc:false},
-    {name:"Leg Raises",sets:3,reps:"12",load:"BODYWEIGHT",loadNote:"ABS — slow and controlled",tfcc:false},
+  "Legs 1":{color:"#7B2FBE",exercises:[
+    {name:"Barbell Squat",sets:4,reps:"8-10",load:"HEAVY",loadNote:"Primary leg mass builder — go heavy",tfcc:false,weightType:"total",weightHint:"Total inc. 20kg bar",restSec:180},
+    {name:"Romanian Deadlift",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — feel hamstring stretch",tfcc:true,weightType:"total",weightHint:"Total inc. 20kg bar",restSec:90},
+    {name:"Leg Press",sets:3,reps:"10-12",load:"HEAVY",loadNote:"Go heavy here, safe on wrists",tfcc:false,weightType:"total",weightHint:"Total stack weight",restSec:120},
+    {name:"Leg Curl",sets:3,reps:"12",load:"MODERATE",loadNote:"Slow and controlled, feel the hamstring",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Calf Raises",sets:4,reps:"15-20",load:"MODERATE",loadNote:"Pause at top and bottom each rep",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:45},
+    {name:"Plank",sets:3,reps:"45 sec",load:"BODYWEIGHT",loadNote:"ABS — longer hold than Push 1",tfcc:false,weightType:"none",restSec:60},
+    {name:"Leg Raises",sets:3,reps:"12",load:"BODYWEIGHT",loadNote:"ABS — slow and controlled",tfcc:false,weightType:"none",restSec:60},
   ]},
-  Thursday:{name:"REST",color:"#2D6A4F",exercises:[
-    {name:"Light Walking",sets:1,reps:"20-30 min",load:"NONE",loadNote:"Active recovery — easy pace only",tfcc:false},
-    {name:"Dead Hangs",sets:3,reps:"20-30 sec",load:"BODYWEIGHT",loadNote:"Grip + wrist decompression — if pain-free",tfcc:false},
-    {name:"Gentle Wrist Stretches",sets:3,reps:"30 sec",load:"NONE",loadNote:"TFCC care — very gentle, no force",tfcc:true},
+  "Rest":{color:"#2D9B6F",exercises:[
+    {name:"Light Walking",sets:1,reps:"20-30 min",load:"NONE",loadNote:"Active recovery — easy pace only",tfcc:false,weightType:"none",restSec:0},
+    {name:"Dead Hangs",sets:3,reps:"20-30 sec",load:"BODYWEIGHT",loadNote:"Grip + wrist decompression — if pain-free",tfcc:false,weightType:"none",restSec:60},
+    {name:"Gentle Wrist Stretches",sets:3,reps:"30 sec",load:"NONE",loadNote:"TFCC care — very gentle, no force",tfcc:true,weightType:"none",restSec:30},
   ]},
-  Friday:{name:"PUSH 2",color:"#FF4D00",exercises:[
-    {name:"Incline Dumbbell Press",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Pyramid up — upper chest focus",tfcc:false},
-    {name:"Arnold Press",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Full rotation, feel all heads of shoulder",tfcc:false},
-    {name:"Cable Fly High to Low",sets:3,reps:"12",load:"MODERATE",loadNote:"Lower chest focus — squeeze at bottom",tfcc:false},
-    {name:"Overhead Tricep Extension",sets:3,reps:"12",load:"MODERATE",loadNote:"Full stretch at top, mind-muscle focus",tfcc:false},
-    {name:"Lateral Raises",sets:3,reps:"12-15",load:"LIGHT",loadNote:"5-8kg only — shoulder burn is the goal",tfcc:false},
+  "Push 2":{color:"#FF4D00",exercises:[
+    {name:"Incline Dumbbell Press",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Pyramid up — upper chest focus",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:120},
+    {name:"Arnold Press",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Full rotation, feel all heads of shoulder",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:90},
+    {name:"Cable Fly High to Low",sets:3,reps:"12",load:"MODERATE",loadNote:"Lower chest focus — squeeze at bottom",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Overhead Tricep Extension",sets:3,reps:"12",load:"MODERATE",loadNote:"Full stretch at top, mind-muscle focus",tfcc:false,weightType:"total",weightHint:"Total inc. 10kg EZ bar",restSec:60},
+    {name:"Lateral Raises",sets:3,reps:"12-15",load:"LIGHT",loadNote:"5-8kg only — shoulder burn is the goal",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:60},
   ]},
-  Saturday:{name:"PULL 2",color:"#00B4D8",exercises:[
-    {name:"Lat Pulldown (Neutral Grip)",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — slightly heavier than Tuesday",tfcc:true},
-    {name:"Single Arm Dumbbell Row",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — brace on bench, full range",tfcc:true},
-    {name:"Low Row",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Squeeze shoulder blades at end",tfcc:false},
-    {name:"Dumbbell Shrugs",sets:3,reps:"12-15",load:"MODERATE",loadNote:"Hold at top for traps activation",tfcc:false},
-    {name:"Hammer Curls",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Neutral grip — safer for TFCC",tfcc:true},
-    {name:"Preacher Curl",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Full stretch at bottom, slow negative",tfcc:false},
+  "Pull 2":{color:"#0077CC",exercises:[
+    {name:"Lat Pulldown (Neutral Grip)",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — slightly heavier than Pull 1",tfcc:true,weightType:"total",weightHint:"Stack weight",restSec:90},
+    {name:"Single Arm Dumbbell Row",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — brace on bench, full range",tfcc:true,weightType:"per-hand",weightHint:"Per hand",restSec:90},
+    {name:"Low Row",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Squeeze shoulder blades at end",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:90},
+    {name:"Dumbbell Shrugs",sets:3,reps:"12-15",load:"MODERATE",loadNote:"Hold at top for traps activation",tfcc:false,weightType:"per-hand",weightHint:"Per hand",restSec:60},
+    {name:"Hammer Curls",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Neutral grip — safer for TFCC",tfcc:true,weightType:"per-hand",weightHint:"Per hand",restSec:60},
+    {name:"Preacher Curl",sets:3,reps:"10-12",load:"MODERATE",loadNote:"Full stretch at bottom, slow negative",tfcc:false,weightType:"total",weightHint:"Total inc. 10kg EZ bar",restSec:60},
   ]},
-  Sunday:{name:"LEGS 2",color:"#7B2FBE",exercises:[
-    {name:"Hack Squat / Goblet Squat",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Different angle from Wednesday squats",tfcc:false},
-    {name:"Walking Lunges",sets:3,reps:"12 each leg",load:"MODERATE",loadNote:"Bodyweight or light dumbbells — balance focus",tfcc:false},
-    {name:"Romanian Deadlift",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — hamstring stretch focus",tfcc:true},
-    {name:"Leg Extension",sets:3,reps:"12",load:"MODERATE",loadNote:"Quad isolation — slow controlled reps",tfcc:false},
-    {name:"Calf Raises",sets:4,reps:"15-20",load:"MODERATE",loadNote:"Pause at top and bottom",tfcc:false},
+  "Legs 2":{color:"#7B2FBE",exercises:[
+    {name:"Hack Squat / Goblet Squat",sets:4,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Different angle from Legs 1",tfcc:false,weightType:"total",weightHint:"Total weight",restSec:120},
+    {name:"Walking Lunges",sets:3,reps:"12 each leg",load:"MODERATE",loadNote:"Bodyweight or light dumbbells",tfcc:false,weightType:"per-hand",weightHint:"Per hand (optional)",restSec:60},
+    {name:"Romanian Deadlift",sets:3,reps:"10-12",load:"MODERATE-HEAVY",loadNote:"Use hooks — hamstring stretch focus",tfcc:true,weightType:"total",weightHint:"Total inc. 20kg bar",restSec:90},
+    {name:"Leg Extension",sets:3,reps:"12",load:"MODERATE",loadNote:"Quad isolation — slow controlled reps",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:60},
+    {name:"Calf Raises",sets:4,reps:"15-20",load:"MODERATE",loadNote:"Pause at top and bottom",tfcc:false,weightType:"total",weightHint:"Stack weight",restSec:45},
   ]},
 };
 
 const GRIP=[
-  {name:"Dead Hangs",sets:3,reps:"30 sec",load:"BODYWEIGHT",loadNote:"Add to any 3 sessions per week"},
-  {name:"Farmer's Carry",sets:3,reps:"40 sec",load:"20KG MAX",loadNote:"TFCC limit — do NOT exceed 20kg"},
+  {name:"Dead Hangs",sets:3,reps:"30 sec",load:"BODYWEIGHT",loadNote:"Add to any 3 sessions per week",weightType:"none",restSec:60},
+  {name:"Farmer's Carry",sets:3,reps:"40 sec",load:"20KG MAX",loadNote:"TFCC limit — max 20kg per hand",weightType:"per-hand",weightHint:"Per hand — max 20kg",restSec:60},
 ];
 
 const LOAD_STYLE={
-  "HEAVY":{bg:"rgba(255,77,0,0.1)",border:"#FF4D00",text:"#FF4D00"},
-  "MODERATE-HEAVY":{bg:"rgba(255,140,0,0.1)",border:"#FF8C00",text:"#FF8C00"},
-  "MODERATE":{bg:"rgba(255,214,0,0.1)",border:"#FFD600",text:"#b8a000"},
-  "LIGHT":{bg:"rgba(0,180,216,0.1)",border:"#00B4D8",text:"#00B4D8"},
-  "BODYWEIGHT":{bg:"rgba(45,106,79,0.1)",border:"#2D6A4F",text:"#52b788"},
-  "NONE":{bg:"rgba(85,85,85,0.1)",border:"#555",text:"#888"},
-  "20KG MAX":{bg:"rgba(255,77,0,0.1)",border:"#FF4D00",text:"#FF4D00"},
+  "HEAVY":{bg:"rgba(255,77,0,0.08)",border:"#FF4D00",text:"#FF4D00"},
+  "MODERATE-HEAVY":{bg:"rgba(255,140,0,0.08)",border:"#FF8C00",text:"#E07800"},
+  "MODERATE":{bg:"rgba(180,140,0,0.08)",border:"#b8a000",text:"#8a7600"},
+  "LIGHT":{bg:"rgba(0,119,204,0.08)",border:"#0077CC",text:"#0077CC"},
+  "BODYWEIGHT":{bg:"rgba(45,155,111,0.08)",border:"#2D9B6F",text:"#2D9B6F"},
+  "NONE":{bg:"rgba(150,150,150,0.08)",border:"#ccc",text:"#999"},
+  "20KG MAX":{bg:"rgba(255,77,0,0.08)",border:"#FF4D00",text:"#FF4D00"},
 };
 
-const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const DAYS=Object.keys(PLAN);
+const TABS=["today","history","body","wrist"];
 
-// App state
+let timerInterval=null;
+let timerSec=0;
+let timerExKey="";
+
+function startTimer(sec,exKey){
+  clearInterval(timerInterval);
+  timerSec=sec; timerExKey=exKey;
+  if(sec<=0){document.getElementById("timer-widget").style.display="none";return;}
+  document.getElementById("timer-widget").style.display="flex";
+  updateTimerUI();
+  timerInterval=setInterval(()=>{
+    timerSec--;
+    if(timerSec<=0){
+      clearInterval(timerInterval);
+      document.getElementById("timer-widget").style.display="none";
+      timerExKey="";
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    } else updateTimerUI();
+  },1000);
+}
+
+function updateTimerUI(){
+  const m=Math.floor(timerSec/60),s=timerSec%60;
+  const txt=m>0?`${m}:${s<10?"0"+s:s}`:`${timerSec}s`;
+  const c=timerSec>30?"#FF4D00":timerSec>10?"#E07800":"#cc0000";
+  document.getElementById("timer-text").textContent=txt;
+  document.getElementById("timer-text").style.color=c;
+  document.getElementById("timer-widget").style.border=`3px solid ${c}`;
+}
+
 let S={
-  tab:"today",
-  day:DAYS[new Date().getDay()===0?6:new Date().getDay()-1],
-  showGrip:false,
-  showLastSession:false,
-  expandedNotes:{},
-  histFilter:"All",
-  saveMsg:"",
+  tab:"today",day:DAYS[0],
+  showGrip:false,showLastSession:false,
+  expandedNotes:{},histFilter:"All",
+  saveMsg:"",measMonth:new Date().toISOString().slice(0,7),
 };
 
 function ls(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}}
 function ss(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
-function getSess(){return ls("wt_s3",{});}
-function setSess(s){ss("wt_s3",s);}
-function getHist(){return ls("wt_h3",[]);}
-function setHist(h){ss("wt_h3",h);}
+function getSess(){return ls("wt_s4",{});}  function setSess(s){ss("wt_s4",s);}
+function getHist(){return ls("wt_h4",[]);}  function setHist(h){ss("wt_h4",h);}
+function getMeas(){return ls("wt_meas",[]);} function setMeas(m){ss("wt_meas",m);}
+function getWrist(){return ls("wt_wrist",[]);} function setWrist(w){ss("wt_wrist",w);}
+function getPRs(){return ls("wt_prs",{});}  function setPRs(p){ss("wt_prs",p);}
+function getGripSess(){return ls("wt_grip",{});}  function setGripSess(g){ss("wt_grip",g);}
 
 function todayStr(){return new Date().toISOString().slice(0,10);}
 function fmtDate(d){return new Date(d).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});}
+function fmtMonth(m){return new Date(m+"-01").toLocaleDateString("en-GB",{month:"long",year:"numeric"});}
+
+function getStreak(){
+  const h=getHist(); if(!h.length) return 0;
+  const dates=[...new Set(h.map(x=>x.date))].sort().reverse();
+  let streak=0; let d=new Date(); d.setHours(0,0,0,0);
+  for(let i=0;i<dates.length;i++){
+    const hd=new Date(dates[i]); hd.setHours(0,0,0,0);
+    const diff=Math.round((d-hd)/(1000*60*60*24));
+    if(diff===0||diff===streak) streak++;
+    else if(diff===streak+1){streak++; d=hd;}
+    else break;
+  }
+  return streak;
+}
 
 function gv(day,field,ei,si){
   const k=si!==undefined?`${day}__${field}__${ei}__${si}`:`${day}__${field}__${ei}`;
@@ -142,22 +192,81 @@ function sv(day,field,ei,val,si){
 function getSN(day){return getSess()[`${day}__sn`]||"";}
 function setSN(day,v){const s=getSess();s[`${day}__sn`]=v;setSess(s);}
 
+// Grip session data
+function getGV(field,gi,si){
+  const k=si!==undefined?`grip__${field}__${gi}__${si}`:`grip__${field}__${gi}`;
+  return getGripSess()[k]??(field==="set"?false:"");
+}
+function setGV(field,gi,val,si){
+  const g=getGripSess();
+  const k=si!==undefined?`grip__${field}__${gi}__${si}`:`grip__${field}__${gi}`;
+  g[k]=val; setGripSess(g);
+}
+
+function checkAndSetPR(day,ei,si){
+  const plan=PLAN[day]; if(!plan) return false;
+  const ex=plan.exercises[ei]; if(!ex) return false;
+  const w=parseFloat(gv(day,"sw",ei,si));
+  const r=parseFloat(gv(day,"sr",ei,si));
+  if(!w||!r) return false;
+  const vol=w*r*(ex.weightType==="per-hand"?2:1);
+  const prs=getPRs(); const key=ex.name;
+  if(!prs[key]||vol>prs[key].vol){
+    prs[key]={vol,weight:w,reps:r,date:todayStr()};
+    setPRs(prs); return true;
+  }
+  return false;
+}
+
+function calcExVol(day,ei){
+  const plan=PLAN[day]; if(!plan) return 0;
+  const ex=plan.exercises[ei]; if(!ex) return 0;
+  let v=0;
+  for(let si=0;si<ex.sets;si++){
+    const w=parseFloat(gv(day,"sw",ei,si))||0;
+    const r=parseFloat(gv(day,"sr",ei,si))||0;
+    if(gv(day,"set",ei,si)) v+=w*r*(ex.weightType==="per-hand"?2:1);
+  }
+  return v;
+}
+
+function calcGripVol(gi){
+  const ex=GRIP[gi]; if(!ex) return 0;
+  let v=0;
+  for(let si=0;si<ex.sets;si++){
+    const w=parseFloat(getGV("sw",gi,si))||0;
+    const r=parseFloat(getGV("sr",gi,si))||0;
+    if(getGV("set",gi,si)) v+=w*r*(ex.weightType==="per-hand"?2:1);
+  }
+  return v;
+}
+
 function saveSession(){
   const day=S.day; const plan=PLAN[day];
-  const entry={
-    id:Date.now(), date:todayStr(), day, dayName:plan.name,
-    exercises:plan.exercises.map((ex,ei)=>({
-      name:ex.name,
-      sets:Array.from({length:ex.sets},(_,si)=>({
-        weight:gv(day,"sw",ei,si)||"-",
-        reps:gv(day,"sr",ei,si)||"-",
-        rating:Number(gv(day,"srat",ei,si))||0,
-        done:!!gv(day,"set",ei,si),
-      })),
-      setsCompleted:Array.from({length:ex.sets},(_,si)=>gv(day,"set",ei,si)?1:0).reduce((a,b)=>a+b,0),
-      totalSets:ex.sets,
-      note:gv(day,"note",ei),
+  const gripData=GRIP.map((ex,gi)=>({
+    name:ex.name,
+    sets:Array.from({length:ex.sets},(_,si)=>({
+      weight:getGV("sw",gi,si)||"-",
+      reps:getGV("sr",gi,si)||"-",
+      rating:Number(getGV("srat",gi,si))||0,
+      done:!!getGV("set",gi,si),
     })),
+    setsCompleted:Array.from({length:ex.sets},(_,si)=>getGV("set",gi,si)?1:0).reduce((a,b)=>a+b,0),
+    totalSets:ex.sets,
+    weightType:ex.weightType,
+    isGrip:true,
+  }));
+  const entry={
+    id:Date.now(),date:todayStr(),day,dayName:day,
+    exercises:[
+      ...plan.exercises.map((ex,ei)=>({
+        name:ex.name,
+        sets:Array.from({length:ex.sets},(_,si)=>({weight:gv(day,"sw",ei,si)||"-",reps:gv(day,"sr",ei,si)||"-",rating:Number(gv(day,"srat",ei,si))||0,done:!!gv(day,"set",ei,si)})),
+        setsCompleted:Array.from({length:ex.sets},(_,si)=>gv(day,"set",ei,si)?1:0).reduce((a,b)=>a+b,0),
+        totalSets:ex.sets,note:gv(day,"note",ei),weightType:ex.weightType,
+      })),
+      ...gripData.filter(g=>g.setsCompleted>0),
+    ],
     sessionNote:getSN(day),
   };
   let h=getHist().filter(x=>!(x.date===entry.date&&x.day===day));
@@ -168,14 +277,11 @@ function saveSession(){
 }
 
 function exportCSV(){
-  const rows=[["Date","Day","Session","Exercise","S1 Weight","S1 Reps","S1 Rating","S2 Weight","S2 Reps","S2 Rating","S3 Weight","S3 Reps","S3 Rating","S4 Weight","S4 Reps","S4 Rating","Note","Session Note"]];
+  const rows=[["Date","Session","Exercise","Weight Type","S1 Wt","S1 Reps","S1 ★","S2 Wt","S2 Reps","S2 ★","S3 Wt","S3 Reps","S3 ★","S4 Wt","S4 Reps","S4 ★","Note","Session Note"]];
   getHist().forEach(h=>{
     h.exercises.forEach(ex=>{
-      const row=[h.date,h.day,h.dayName,ex.name];
-      for(let i=0;i<4;i++){
-        const s=ex.sets&&ex.sets[i];
-        row.push(s?s.weight:"",s?s.reps:"",s?s.rating:"");
-      }
+      const row=[h.date,h.dayName,ex.name,ex.weightType||""];
+      for(let i=0;i<4;i++){const s=ex.sets&&ex.sets[i];row.push(s?s.weight:"",s?s.reps:"",s?s.rating:"");}
       row.push(ex.note||"",h.sessionNote||"");
       rows.push(row);
     });
@@ -186,241 +292,378 @@ function exportCSV(){
   a.download=`workout-${todayStr()}.csv`; a.click();
 }
 
-function stars(rating,ei,si,day){
+function stars(rating,cbStr){
   let h="";
   for(let i=1;i<=5;i++){
     const lit=i<=Number(rating);
-    h+=`<button class="star-btn ${lit?"lit":""}" onclick="sv('${day}','srat',${ei},${i==Number(rating)?0:i},${si});render();">★</button>`;
+    h+=`<button class="star-btn" style="color:${lit?"#FFD600":"#ddd"};" onclick="${cbStr.replace('__STAR__',i)}"">★</button>`;
   }
   return h;
 }
-
-function renderStarsStatic(rating){
+function starsStatic(r){
   let h="";
-  for(let i=1;i<=5;i++) h+=`<span style="color:${i<=rating?"#FFD600":"#2a2a2a"};font-size:11px;">★</span>`;
+  for(let i=1;i<=5;i++) h+=`<span style="color:${i<=r?"#FFD600":"#ddd"};font-size:11px;">★</span>`;
   return h;
 }
 
+function renderSetRows(ex,gi_or_ei,isGrip,dc){
+  let html="";
+  for(let si=0;si<ex.sets;si++){
+    const isDone=isGrip?!!getGV("set",gi_or_ei,si):!!gv(S.day,"set",gi_or_ei,si);
+    const wv=isGrip?getGV("sw",gi_or_ei,si):gv(S.day,"sw",gi_or_ei,si);
+    const rv=isGrip?getGV("sr",gi_or_ei,si):gv(S.day,"sr",gi_or_ei,si);
+    const rat=isGrip?Number(getGV("srat",gi_or_ei,si)):Number(gv(S.day,"srat",gi_or_ei,si))||0;
+    const repPH=ex.reps.includes("-")?ex.reps.split("-")[1]:ex.reps;
+    const swCB=isGrip?`setGV('sw',${gi_or_ei},this.value,${si});`:`sv('${S.day}','sw',${gi_or_ei},this.value,${si});`;
+    const srCB=isGrip?`setGV('sr',${gi_or_ei},this.value,${si});`:`sv('${S.day}','sr',${gi_or_ei},this.value,${si});`;
+    const sratCB=isGrip?`setGV('srat',${gi_or_ei},__STAR__===Number(getGV('srat',${gi_or_ei},${si}))?0:__STAR__,${si});render();`:`sv('${S.day}','srat',${gi_or_ei},__STAR__==Number(gv('${S.day}','srat',${gi_or_ei},${si}))?0:__STAR__,${si});render();`;
+    const tickCB=isGrip?
+      `const wd=!!getGV('set',${gi_or_ei},${si});setGV('set',${gi_or_ei},!wd,${si});if(!wd)startTimer(${ex.restSec},'grip-${gi_or_ei}');else{clearInterval(timerInterval);document.getElementById('timer-widget').style.display='none';}render();`:
+      `const wd=!!gv('${S.day}','set',${gi_or_ei},${si});sv('${S.day}','set',${gi_or_ei},!wd,${si});if(!wd){checkAndSetPR('${S.day}',${gi_or_ei},${si});startTimer(${ex.restSec},'${S.day}-${gi_or_ei}');}else{clearInterval(timerInterval);document.getElementById('timer-widget').style.display='none';}render();`;
+
+    // Volume for this set
+    const setVol=isDone&&parseFloat(wv)&&parseFloat(rv)?(parseFloat(wv)*parseFloat(rv)*(ex.weightType==="per-hand"?2:1)):0;
+
+    html+=`<div class="${isGrip?"grip-set-row":"set-row"}" style="${isDone?`background:${dc}08;border-color:${dc}33;`:""}">
+      <span style="font-size:11px;font-weight:700;color:${isDone?dc:"#bbb"};width:22px;flex-shrink:0;">S${si+1}</span>`;
+    if(ex.weightType!=="none"){
+      html+=`<input class="set-input" type="number" placeholder="kg" value="${wv}" style="width:48px;${isDone?`border-color:${dc}44;`:""}" oninput="${swCB}"/>
+      <span style="font-size:9px;color:#aaa;flex-shrink:0;">${ex.weightType==="per-hand"?"✋":"⚖️"}</span>`;
+    }
+    html+=`<input class="set-input" type="number" placeholder="${repPH}" value="${rv}" style="width:36px;${isDone?`border-color:${dc}44;`:""}" oninput="${srCB}"/>
+      <span style="font-size:9px;color:#aaa;flex-shrink:0;">reps</span>
+      ${setVol>0?`<span style="font-size:9px;color:${dc};flex-shrink:0;background:${dc}0d;padding:2px 5px;border-radius:5px;">${Math.round(setVol)}kg</span>`:"<div style='flex:1'></div>"}
+      <div style="display:flex;gap:1px;flex-shrink:0;">${stars(rat,sratCB)}</div>
+      <button class="tick-btn" style="${isDone?`background:${dc};border-color:${dc};color:#fff;`:`color:#ccc;`}" onclick="${tickCB}">${isDone?"✓":"○"}</button>
+    </div>`;
+  }
+  return html;
+}
+
 function render(){
-  const plan=PLAN[S.day];
-  const dc=plan.color;
+  const plan=PLAN[S.day]; const dc=plan.color;
   let total=0,done=0;
-  plan.exercises.forEach((ex,ei)=>{
-    total+=ex.sets;
-    for(let si=0;si<ex.sets;si++) if(gv(S.day,"set",ei,si)) done++;
-  });
+  plan.exercises.forEach((ex,ei)=>{total+=ex.sets;for(let si=0;si<ex.sets;si++) if(gv(S.day,"set",ei,si)) done++;});
   const pct=total>0?Math.round((done/total)*100):0;
   const hist=getHist();
   const lastSess=hist.find(h=>h.day===S.day);
   const filtHist=S.histFilter==="All"?hist:hist.filter(h=>h.day===S.histFilter);
+  const streak=getStreak();
+  const prs=getPRs();
 
-  let html=`
-  <div class="top-nav">
-    <button class="nav-btn" style="border-bottom-color:${S.tab==="today"?dc:"transparent"};color:${S.tab==="today"?dc:"#555"};" onclick="S.tab='today';render();">📋 Workout</button>
-    <button class="nav-btn" style="border-bottom-color:${S.tab==="history"?dc:"transparent"};color:${S.tab==="history"?dc:"#555"};" onclick="S.tab='history';render();">📈 History</button>
+  let html=`<div class="top-nav">
+    ${TABS.map(t=>{
+      const labels={"today":"📋 Workout","history":"📈 History","body":"📏 Body","wrist":"🦾 Wrist"};
+      return`<button class="nav-btn" style="border-bottom-color:${S.tab===t?dc:"transparent"};color:${S.tab===t?dc:"#999"};" onclick="S.tab='${t}';render();">${labels[t]}</button>`;
+    }).join("")}
   </div>`;
 
+  // TODAY
   if(S.tab==="today"){
-    // Header
-    html+=`
-    <div style="background:linear-gradient(135deg,${dc}18,#0a0a0a);border-bottom:1px solid ${dc}22;padding:20px 16px 14px;">
-      <div style="font-size:10px;letter-spacing:4px;color:#555;margin-bottom:4px;">YOUR PPL PLAN</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div><span style="font-size:26px;font-weight:bold;color:${dc};">${S.day}</span><span style="font-size:14px;color:#666;margin-left:8px;">${plan.name}</span></div>
-        <div style="text-align:right;"><div style="font-size:20px;font-weight:bold;color:${dc};">${pct}%</div><div style="font-size:11px;color:#555;">${done}/${total} sets</div></div>
+    html+=`<div style="background:linear-gradient(135deg,${dc}12,#f5f5f7);border-bottom:1px solid #eee;padding:20px 16px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-size:10px;letter-spacing:4px;color:#aaa;margin-bottom:4px;">YOUR PPL PLAN</div>
+          <div style="font-size:28px;font-weight:800;color:${dc};">${S.day}</div>
+        </div>
+        <div style="text-align:right;">
+          ${streak>0?`<div style="font-size:11px;color:#E07800;margin-bottom:4px;">🔥 ${streak} day streak</div>`:""}
+          <div style="font-size:22px;font-weight:800;color:${dc};">${pct}%</div>
+          <div style="font-size:11px;color:#aaa;">${done}/${total} sets</div>
+        </div>
       </div>
-      <div style="margin-top:10px;height:3px;background:#1e1e1e;border-radius:2px;"><div style="height:100%;width:${pct}%;background:${dc};border-radius:2px;transition:width 0.3s;"></div></div>
-      <div style="margin-top:8px;font-size:11px;color:#555;">📅 ${fmtDate(todayStr())}</div>
+      <div style="margin-top:10px;height:4px;background:#e5e5e5;border-radius:2px;"><div style="height:100%;width:${pct}%;background:${dc};border-radius:2px;transition:width 0.3s;"></div></div>
+      <div style="margin-top:8px;font-size:11px;color:#aaa;">📅 ${fmtDate(todayStr())}</div>
     </div>`;
 
-    // Day selector
     html+=`<div class="day-scroll">`;
     DAYS.forEach(d=>{
       const a=d===S.day;
-      html+=`<button class="day-btn" style="${a?`border-color:${PLAN[d].color};color:${PLAN[d].color};background:rgba(255,255,255,0.04);`:""}" onclick="S.day='${d}';S.showLastSession=false;render();">${d.slice(0,3).toUpperCase()}<br><span style="font-size:9px;">${PLAN[d].name}</span></button>`;
+      html+=`<button class="day-btn" style="${a?`border-color:${PLAN[d].color};color:${PLAN[d].color};background:${PLAN[d].color}0d;`:""}" onclick="S.day='${d}';S.showLastSession=false;render();">${d}</button>`;
     });
     html+=`</div>`;
 
-    // Last session comparison
+    // Last session
     if(lastSess){
-      html+=`<div class="section">
-        <button style="width:100%;padding:11px 14px;background:#111;border:1px solid ${dc}33;border-radius:12px;color:${dc};font-size:12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;" onclick="S.showLastSession=!S.showLastSession;render();">
+      html+=`<div class="section" style="margin-top:8px;">
+        <button style="width:100%;padding:11px 14px;background:#fff;border:1.5px solid ${dc}33;border-radius:12px;color:${dc};font-size:12px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="S.showLastSession=!S.showLastSession;render();">
           <span>📊 Last ${S.day} — ${fmtDate(lastSess.date)}</span><span>${S.showLastSession?"▲":"▼"}</span>
         </button>`;
       if(S.showLastSession){
-        html+=`<div style="background:#0d0d0d;border:1px solid ${dc}22;border-top:none;border-radius:0 0 12px 12px;padding:10px 14px;">`;
+        html+=`<div style="background:#fafafa;border:1.5px solid ${dc}22;border-top:none;border-radius:0 0 12px 12px;padding:10px 14px;">`;
         lastSess.exercises.forEach((ex,i)=>{
-          html+=`<div style="padding-bottom:8px;margin-bottom:8px;border-bottom:${i<lastSess.exercises.length-1?"1px solid #1a1a1a":"none"};">
-            <div style="font-size:12px;font-weight:bold;color:#ccc;margin-bottom:4px;">${ex.name}</div>`;
-          if(ex.sets){
-            ex.sets.forEach((s,si)=>{
-              html+=`<div style="display:flex;gap:8px;font-size:11px;color:#666;margin-bottom:2px;align-items:center;">
-                <span style="color:#555;width:20px;">S${si+1}</span>
-                <span style="color:#999;">${s.weight!=="-"?s.weight+"kg":""}</span>
-                <span>${s.reps!=="-"?s.reps+" reps":""}</span>
-                <span>${renderStarsStatic(s.rating)}</span>
-              </div>`;
-            });
-          }
-          if(ex.note) html+=`<div style="font-size:10px;color:#555;font-style:italic;margin-top:3px;">📝 ${ex.note}</div>`;
+          html+=`<div style="padding-bottom:8px;margin-bottom:8px;border-bottom:${i<lastSess.exercises.length-1?"1px solid #eee":"none"};">
+            <div style="font-size:12px;font-weight:700;color:#333;margin-bottom:4px;">${ex.name}${ex.isGrip?` <span style="font-size:9px;color:#999;background:#f0f0f0;padding:1px 5px;border-radius:4px;">GRIP</span>`:""}</div>`;
+          if(ex.sets) ex.sets.forEach((s,si)=>{
+            html+=`<div style="display:flex;gap:8px;font-size:11px;color:#999;margin-bottom:2px;align-items:center;">
+              <span style="color:#ccc;width:20px;">S${si+1}</span>
+              <span style="color:#555;">${s.weight!=="-"?s.weight+"kg":""}</span>
+              <span>${s.reps!=="-"?s.reps+" reps":""}</span>
+              <span>${starsStatic(s.rating)}</span>
+            </div>`;
+          });
+          if(ex.note) html+=`<div style="font-size:10px;color:#aaa;font-style:italic;margin-top:3px;">📝 ${ex.note}</div>`;
           html+=`</div>`;
         });
-        if(lastSess.sessionNote) html+=`<div style="font-size:11px;color:#666;font-style:italic;border-top:1px solid #1a1a1a;padding-top:8px;">💬 ${lastSess.sessionNote}</div>`;
+        if(lastSess.sessionNote) html+=`<div style="font-size:11px;color:#999;font-style:italic;border-top:1px solid #eee;padding-top:8px;">💬 ${lastSess.sessionNote}</div>`;
         html+=`</div>`;
       }
       html+=`</div>`;
     }
 
     // Exercises
-    html+=`<div style="padding:4px 14px;">`;
+    html+=`<div style="padding:8px 14px;">`;
     plan.exercises.forEach((ex,ei)=>{
       const lc=LOAD_STYLE[ex.load]||LOAD_STYLE.MODERATE;
       const noteExp=S.expandedNotes[`${S.day}-${ei}`];
       const noteVal=gv(S.day,"note",ei);
+      const pr=prs[ex.name];
+      const exVol=calcExVol(S.day,ei);
       html+=`<div class="ex-card">
         <div style="padding:13px 14px 8px;">
           <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;">
             <div style="flex:1;">
-              <div style="font-size:14px;font-weight:bold;color:#eee;line-height:1.3;">${ex.name}${ex.tfcc?`<span style="margin-left:7px;font-size:9px;background:rgba(255,77,0,0.1);color:#FF4D00;padding:2px 5px;border-radius:4px;border:1px solid rgba(255,77,0,0.2);">🪝 HOOKS</span>`:""}</div>
-              <div style="font-size:11px;color:#555;margin-top:2px;">${ex.sets} sets × ${ex.reps}</div>
+              <div style="font-size:14px;font-weight:700;color:#1a1a1a;line-height:1.3;">${ex.name}${ex.tfcc?`<span style="margin-left:6px;font-size:9px;background:rgba(255,77,0,0.08);color:#FF4D00;padding:2px 5px;border-radius:4px;border:1px solid rgba(255,77,0,0.15);">🪝 HOOKS</span>`:""}</div>
+              <div style="font-size:11px;color:#aaa;margin-top:2px;">${ex.sets} sets × ${ex.reps}${ex.weightType!=="none"?` &nbsp;·&nbsp; <span style="color:#999;">${ex.weightType==="per-hand"?"✋ Per hand":"⚖️ "+ex.weightHint}</span>`:""}</div>
+              ${pr?`<div style="font-size:10px;color:#E07800;margin-top:2px;font-weight:600;">🏆 PR: ${pr.weight}kg × ${pr.reps} reps — ${fmtDate(pr.date)}</div>`:""}
+              ${exVol>0?`<div style="font-size:10px;color:${dc};margin-top:2px;font-weight:600;">📦 Volume: ${Math.round(exVol).toLocaleString()}kg</div>`:""}
             </div>
-            <div style="padding:3px 9px;border-radius:7px;background:${lc.bg};border:1px solid ${lc.border};color:${lc.text};font-size:9px;font-weight:bold;letter-spacing:1px;flex-shrink:0;">${ex.load}</div>
+            <div style="padding:3px 9px;border-radius:7px;background:${lc.bg};border:1px solid ${lc.border};color:${lc.text};font-size:9px;font-weight:700;letter-spacing:1px;flex-shrink:0;">${ex.load}</div>
           </div>
-          <div style="margin-top:6px;font-size:11px;color:#666;font-style:italic;">${ex.loadNote}</div>
+          <div style="margin-top:6px;font-size:11px;color:#aaa;font-style:italic;">${ex.loadNote}</div>
         </div>
-        <div style="padding:0 14px 8px;">`;
-
-      // Per-set rows
-      for(let si=0;si<ex.sets;si++){
-        const isDone=!!gv(S.day,"set",ei,si);
-        const wv=gv(S.day,"sw",ei,si);
-        const rv=gv(S.day,"sr",ei,si);
-        const rat=Number(gv(S.day,"srat",ei,si))||0;
-        const repPH=ex.reps.includes("-")?ex.reps.split("-")[1]:ex.reps;
-        html+=`<div class="set-row ${isDone?"done":""}" style="${isDone?`background:${dc}12;border-color:${dc}44;`:""}">
-          <span style="font-size:11px;font-weight:bold;color:${isDone?dc:"#555"};width:22px;flex-shrink:0;">S${si+1}</span>`;
-        if(ex.load!=="BODYWEIGHT"&&ex.load!=="NONE"){
-          html+=`<input class="set-input" type="number" placeholder="kg" value="${wv}" style="width:50px;border-color:${isDone?dc+"44":"#2a2a2a"};" oninput="sv('${S.day}','sw',${ei},this.value,${si});"/>
-          <span style="font-size:10px;color:#444;flex-shrink:0;">kg</span>`;
-        }
-        html+=`<input class="set-input" type="number" placeholder="${repPH}" value="${rv}" style="width:38px;border-color:${isDone?dc+"44":"#2a2a2a"};" oninput="sv('${S.day}','sr',${ei},this.value,${si});"/>
-          <span style="font-size:10px;color:#444;flex-shrink:0;">reps</span>
-          <div style="flex:1;"></div>
-          <div style="display:flex;gap:1px;flex-shrink:0;">${stars(rat,ei,si,S.day)}</div>
-          <button class="tick-btn ${isDone?"done":""}" style="${isDone?`background:${dc};border-color:${dc};`:""}" onclick="sv('${S.day}','set',${ei},!${isDone},${si});render();">${isDone?"✓":"○"}</button>
-        </div>`;
-      }
-
-      html+=`</div>
+        <div style="padding:0 14px 8px;">${renderSetRows(ex,ei,false,dc)}</div>
         <div style="padding:0 14px 12px;">
-          <button style="background:none;border:none;font-size:11px;padding:0;color:${noteVal?dc:"#333"};display:flex;align-items:center;gap:4px;cursor:pointer;" onclick="S.expandedNotes['${S.day}-${ei}']=!S.expandedNotes['${S.day}-${ei}'];render();">
+          <button style="background:none;border:none;font-size:11px;padding:0;color:${noteVal?dc:"#ccc"};display:flex;align-items:center;gap:4px;cursor:pointer;font-weight:600;" onclick="S.expandedNotes['${S.day}-${ei}']=!S.expandedNotes['${S.day}-${ei}'];render();">
             <span>${noteExp?"▲":"▼"}</span><span>${noteVal?"📝 Note for next session":"Add note for next session"}</span>
           </button>
-          ${noteExp?`<textarea style="margin-top:7px;width:100%;padding:7px 9px;background:#161616;border:1px solid ${dc}33;border-radius:7px;color:#bbb;font-size:11px;outline:none;resize:none;line-height:1.5;" rows="2" placeholder="e.g. Try 17.5kg next time..." oninput="sv('${S.day}','note',${ei},this.value);">${noteVal}</textarea>`:""}
+          ${noteExp?`<textarea style="margin-top:7px;width:100%;padding:7px 9px;background:#f9f9f9;border:1.5px solid ${dc}33;border-radius:9px;color:#333;font-size:11px;outline:none;resize:none;line-height:1.5;" rows="2" placeholder="e.g. Try heavier next time..." oninput="sv('${S.day}','note',${ei},this.value);">${noteVal}</textarea>`:""}
         </div>
       </div>`;
     });
     html+=`</div>`;
 
-    // Grip
+    // GRIP WORK with full tracking
     html+=`<div class="section">
-      <button style="width:100%;padding:13px 14px;background:#111;border:1px solid #1e1e1e;border-radius:14px;color:#666;font-size:13px;text-align:left;display:flex;justify-content:space-between;" onclick="S.showGrip=!S.showGrip;render();">
-        <span>💪 Grip Work (add to any 3 sessions)</span><span>${S.showGrip?"▲":"▼"}</span>
+      <button style="width:100%;padding:13px 14px;background:#fff;border:1.5px solid #eee;border-radius:14px;color:#555;font-size:13px;font-weight:600;text-align:left;display:flex;justify-content:space-between;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="S.showGrip=!S.showGrip;render();">
+        <span>💪 Grip Work</span><span style="color:#aaa;">${S.showGrip?"▲":"▼"}</span>
       </button>`;
     if(S.showGrip){
-      html+=`<div style="margin-top:7px;">`;
-      GRIP.forEach(ex=>{
+      html+=`<div style="margin-top:8px;">`;
+      GRIP.forEach((ex,gi)=>{
         const lc=LOAD_STYLE[ex.load]||LOAD_STYLE.MODERATE;
-        html+=`<div style="background:#111;border-radius:12px;border:1px solid #1c1c1c;padding:11px 14px;margin-bottom:7px;">
-          <div style="font-size:13px;font-weight:bold;color:#eee;">${ex.name}</div>
-          <div style="font-size:11px;color:#555;margin-top:2px;">${ex.sets} sets × ${ex.reps}</div>
-          <div style="margin-top:5px;display:inline-block;padding:2px 8px;border-radius:5px;background:${lc.bg};border:1px solid ${lc.border};color:${lc.text};font-size:9px;font-weight:bold;">${ex.load}</div>
-          <div style="font-size:11px;color:#666;font-style:italic;margin-top:5px;">${ex.loadNote}</div>
+        const gVol=calcGripVol(gi);
+        html+=`<div class="ex-card">
+          <div style="padding:12px 14px 8px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:700;color:#1a1a1a;">${ex.name}</div>
+                <div style="font-size:11px;color:#aaa;margin-top:2px;">${ex.sets} sets × ${ex.reps}${ex.weightType!=="none"?` &nbsp;·&nbsp; ✋ Per hand`:""}</div>
+                ${gVol>0?`<div style="font-size:10px;color:#2D9B6F;margin-top:2px;font-weight:600;">📦 Volume: ${Math.round(gVol)}kg</div>`:""}
+              </div>
+              <div style="padding:3px 8px;border-radius:6px;background:${lc.bg};border:1px solid ${lc.border};color:${lc.text};font-size:9px;font-weight:700;">${ex.load}</div>
+            </div>
+            <div style="margin-top:5px;font-size:11px;color:#aaa;font-style:italic;">${ex.loadNote}</div>
+          </div>
+          <div style="padding:0 14px 12px;">${renderSetRows(ex,gi,true,"#2D9B6F")}</div>
         </div>`;
       });
       html+=`</div>`;
     }
     html+=`</div>`;
 
-    // Session note
-    html+=`<div class="section"><div class="card" style="border-color:${dc}22;">
-      <div style="font-size:10px;letter-spacing:3px;color:#444;margin-bottom:8px;">SESSION NOTES</div>
-      <textarea style="width:100%;padding:9px 11px;background:#181818;border:1px solid ${dc}33;border-radius:9px;color:#bbb;font-size:12px;outline:none;resize:none;line-height:1.6;" rows="3"
+    // Total session volume
+    let totalVol=0;
+    plan.exercises.forEach((_,ei)=>totalVol+=calcExVol(S.day,ei));
+    GRIP.forEach((_,gi)=>totalVol+=calcGripVol(gi));
+    if(totalVol>0){
+      html+=`<div class="section"><div class="card">
+        <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:6px;">TOTAL SESSION VOLUME</div>
+        <div style="font-size:26px;font-weight:800;color:${dc};">${Math.round(totalVol).toLocaleString()} <span style="font-size:14px;font-weight:400;color:#aaa;">kg</span></div>
+      </div></div>`;
+    }
+
+    html+=`<div class="section"><div class="card">
+      <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:8px;">SESSION NOTES</div>
+      <textarea style="width:100%;padding:9px 11px;background:#f9f9f9;border:1.5px solid #eee;border-radius:10px;color:#333;font-size:12px;outline:none;resize:none;line-height:1.6;" rows="3"
         placeholder="Overall notes for this session..." oninput="setSN('${S.day}',this.value);">${getSN(S.day)}</textarea>
     </div></div>`;
 
-    // Save button
     html+=`<div class="section"><button class="save-btn" style="background:${dc};" onclick="saveSession();">${S.saveMsg||"💾 Save Session"}</button></div>`;
 
-    // Reminders
     html+=`<div class="section"><div class="card">
-      <div style="font-size:10px;letter-spacing:3px;color:#444;margin-bottom:8px;">REMINDERS</div>
-      ${["Always pyramid up in weight","Rest 60-90 sec between sets","Last 2 reps should feel hard","Stop if wrist gives sharp pain","Warm up 5 min before every session"].map((r,i,a)=>`
-        <div style="font-size:12px;color:#777;padding:6px 0;border-bottom:${i<a.length-1?"1px solid #181818":"none"};display:flex;gap:7px;">
+      <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:8px;">REMINDERS</div>
+      ${["Always pyramid up in weight","2-3 min rest for heavy, 60-90 sec for isolation","Last 2 reps should feel hard","Stop if wrist gives sharp pain","Warm up 5 min before every session"].map((r,i,a)=>`
+        <div style="font-size:12px;color:#888;padding:6px 0;border-bottom:${i<a.length-1?"1px solid #f0f0f0":"none"};display:flex;gap:7px;">
           <span style="color:${dc};">→</span>${r}</div>`).join("")}
     </div></div>`;
   }
 
-  // HISTORY TAB
+  // HISTORY
   if(S.tab==="history"){
     html+=`<div style="padding:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div style="font-size:16px;font-weight:bold;color:#eee;">Session History</div>
-        <button style="padding:8px 14px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:#aaa;font-size:12px;cursor:pointer;" onclick="exportCSV();">⬇ Export CSV</button>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#1a1a1a;">Session History</div>
+          ${streak>0?`<div style="font-size:12px;color:#E07800;margin-top:2px;font-weight:600;">🔥 ${streak} day streak</div>`:""}
+        </div>
+        <button style="padding:8px 14px;background:#fff;border:1.5px solid #e5e5e5;border-radius:10px;color:#555;font-size:12px;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="exportCSV();">⬇ Export CSV</button>
       </div>
       <div style="display:flex;overflow-x:auto;gap:6px;margin-bottom:14px;">
         ${["All",...DAYS].map(d=>{
           const a=S.histFilter===d;
-          const c=d==="All"?"#888":PLAN[d].color;
-          return`<button class="filter-btn" style="${a?`border-color:${c};color:${c};background:#1e1e1e;`:""}" onclick="S.histFilter='${d}';render();">${d==="All"?"All":d.slice(0,3)}</button>`;
+          const c=d==="All"?"#555":PLAN[d].color;
+          return`<button class="filter-btn" style="${a?`border-color:${c};color:${c};background:${c}0d;font-weight:700;`:""}" onclick="S.histFilter='${d}';render();">${d==="All"?"All":d}</button>`;
         }).join("")}
-      </div>`;
+      </div>
+      ${Object.keys(prs).length>0?`
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:8px;">🏆 PERSONAL RECORDS</div>
+        ${Object.entries(prs).map(([name,pr])=>`
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid #f0f0f0;">
+            <span style="color:#555;flex:1;">${name}</span>
+            <span style="color:#E07800;font-weight:700;">${pr.weight}kg × ${pr.reps} reps</span>
+          </div>`).join("")}
+      </div>`:""}`;
 
     if(filtHist.length===0){
-      html+=`<div style="text-align:center;color:#444;padding:60px 20px;font-size:14px;line-height:2;">No sessions saved yet.<br><span style="font-size:12px;color:#333;">Complete a workout and tap Save Session.</span></div>`;
+      html+=`<div style="text-align:center;color:#ccc;padding:60px 20px;font-size:14px;line-height:2;">No sessions saved yet.<br><span style="font-size:12px;">Complete a workout and tap Save Session.</span></div>`;
     } else {
       filtHist.forEach(h=>{
         const hc=PLAN[h.day]?.color||"#888";
         const compEx=h.exercises.filter(e=>e.setsCompleted>0).length;
-        html+=`<div style="background:#111;border-radius:14px;border:1px solid ${hc}22;margin-bottom:10px;overflow:hidden;">
-          <div style="padding:12px 14px 8px;background:${hc}0d;border-bottom:1px solid ${hc}22;">
+        const totalVol=h.exercises.reduce((acc,ex)=>{
+          if(!ex.sets) return acc;
+          return acc+ex.sets.filter(s=>s.done).reduce((a,s)=>{
+            const w=parseFloat(s.weight)||0,r=parseFloat(s.reps)||0;
+            return a+w*r*(ex.weightType==="per-hand"?2:1);
+          },0);
+        },0);
+        html+=`<div style="background:#fff;border-radius:14px;border:1px solid #eee;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="padding:12px 14px 8px;background:${hc}08;border-bottom:1px solid ${hc}18;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div><span style="font-size:14px;font-weight:bold;color:${hc};">${h.day}</span><span style="font-size:12px;color:#555;margin-left:8px;">${h.dayName}</span></div>
-              <div style="font-size:11px;color:#555;">📅 ${fmtDate(h.date)}</div>
+              <div style="font-size:15px;font-weight:800;color:${hc};">${h.day}</div>
+              <div style="font-size:11px;color:#aaa;">📅 ${fmtDate(h.date)}</div>
             </div>
-            <div style="font-size:11px;color:#555;margin-top:3px;">${compEx}/${h.exercises.length} exercises</div>
+            <div style="display:flex;gap:12px;margin-top:3px;">
+              <span style="font-size:11px;color:#aaa;">${compEx}/${h.exercises.length} exercises</span>
+              ${totalVol>0?`<span style="font-size:11px;color:${hc};font-weight:600;">📦 ${Math.round(totalVol).toLocaleString()}kg</span>`:""}
+            </div>
           </div>
           <div style="padding:8px 14px;">`;
         h.exercises.forEach((ex,i)=>{
-          html+=`<div style="padding:6px 0;border-bottom:${i<h.exercises.length-1?"1px solid #181818":"none"};">
-            <div style="display:flex;justify-content:space-between;">
-              <div style="font-size:12px;font-weight:bold;color:${ex.setsCompleted>0?"#ddd":"#444"};">${ex.name}</div>
-              <div style="font-size:10px;color:#444;">${ex.setsCompleted}/${ex.totalSets} sets</div>
+          const exVol=ex.sets?ex.sets.filter(s=>s.done).reduce((a,s)=>{const w=parseFloat(s.weight)||0,r=parseFloat(s.reps)||0;return a+w*r*(ex.weightType==="per-hand"?2:1);},0):0;
+          html+=`<div style="padding:6px 0;border-bottom:${i<h.exercises.length-1?"1px solid #f5f5f5":"none"};">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:12px;font-weight:700;color:${ex.setsCompleted>0?"#333":"#ccc"};">${ex.name}${ex.isGrip?` <span style="font-size:9px;color:#999;background:#f5f5f5;padding:1px 5px;border-radius:4px;">GRIP</span>`:""}</div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                ${exVol>0?`<span style="font-size:10px;color:${hc};font-weight:600;">${Math.round(exVol)}kg</span>`:""}
+                <div style="font-size:10px;color:#aaa;">${ex.setsCompleted}/${ex.totalSets}</div>
+              </div>
             </div>`;
-          if(ex.sets){
-            ex.sets.filter(s=>s.done||s.weight!=="-").forEach((s,si)=>{
-              html+=`<div style="display:flex;gap:8px;font-size:11px;color:#666;margin-top:3px;align-items:center;">
-                <span style="color:#555;width:20px;">S${si+1}</span>
-                <span style="color:${hc};">${s.weight!=="-"?s.weight+"kg":""}</span>
-                <span>${s.reps!=="-"?s.reps+" reps":""}</span>
-                <span>${renderStarsStatic(s.rating)}</span>
-              </div>`;
-            });
-          }
-          if(ex.note) html+=`<div style="font-size:10px;color:#555;font-style:italic;margin-top:3px;">📝 ${ex.note}</div>`;
+          if(ex.sets) ex.sets.filter(s=>s.done||s.weight!=="-").forEach((s,si)=>{
+            html+=`<div style="display:flex;gap:8px;font-size:11px;color:#aaa;margin-top:3px;align-items:center;">
+              <span style="color:#ccc;width:20px;">S${si+1}</span>
+              <span style="color:${hc};font-weight:600;">${s.weight!=="-"?s.weight+"kg":""}</span>
+              <span>${s.reps!=="-"?s.reps+" reps":""}</span>
+              <span>${starsStatic(s.rating)}</span>
+            </div>`;
+          });
+          if(ex.note) html+=`<div style="font-size:10px;color:#aaa;font-style:italic;margin-top:3px;">📝 ${ex.note}</div>`;
           html+=`</div>`;
         });
         html+=`</div>`;
-        if(h.sessionNote) html+=`<div style="padding:8px 14px 12px;border-top:1px solid #181818;"><div style="font-size:10px;color:#444;margin-bottom:3px;">SESSION NOTE</div><div style="font-size:12px;color:#777;font-style:italic;">${h.sessionNote}</div></div>`;
+        if(h.sessionNote) html+=`<div style="padding:8px 14px 12px;border-top:1px solid #f5f5f5;font-size:12px;color:#aaa;font-style:italic;">💬 ${h.sessionNote}</div>`;
         html+=`</div>`;
       });
     }
     html+=`</div>`;
   }
 
+  // BODY
+  if(S.tab==="body"){
+    const meas=getMeas();
+    const months=[...new Set(meas.map(m=>m.month))].sort().reverse();
+    const fields=["Weight (kg)","Waist (cm)","Chest (cm)","Left Arm (cm)","Right Arm (cm)","Hips (cm)"];
+    const curMeas=meas.find(m=>m.month===S.measMonth)||{month:S.measMonth,data:{}};
+    html+=`<div style="padding:14px;">
+      <div style="font-size:18px;font-weight:800;color:#1a1a1a;margin-bottom:4px;">📏 Body Measurements</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:14px;">Track monthly to see recomp progress</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        <button style="background:#fff;border:1.5px solid #e5e5e5;border-radius:8px;color:#555;padding:6px 12px;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="const d=new Date(S.measMonth+'-01');d.setMonth(d.getMonth()-1);S.measMonth=d.toISOString().slice(0,7);render();">◀</button>
+        <div style="flex:1;text-align:center;font-size:14px;font-weight:700;color:#333;">${fmtMonth(S.measMonth)}</div>
+        <button style="background:#fff;border:1.5px solid #e5e5e5;border-radius:8px;color:#555;padding:6px 12px;font-size:14px;box-shadow:0 1px 3px rgba(0,0,0,0.04);" onclick="const d=new Date(S.measMonth+'-01');d.setMonth(d.getMonth()+1);S.measMonth=d.toISOString().slice(0,7);render();">▶</button>
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        ${fields.map(f=>`
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;color:#888;font-weight:600;">${f}</div>
+            <input class="meas-input" type="number" placeholder="Enter value" value="${curMeas.data[f]||""}"
+              oninput="const all=getMeas().filter(m=>m.month!=='${S.measMonth}');const cur=getMeas().find(m=>m.month==='${S.measMonth}')||{month:'${S.measMonth}',data:{}};cur.data['${f}']=this.value;setMeas([...all,cur]);"/>
+          </div>`).join("")}
+        <button style="width:100%;padding:12px;background:#FF4D00;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;margin-top:4px;" onclick="render();">Save Measurements</button>
+      </div>
+      ${months.length>1?`
+      <div class="card">
+        <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:10px;">PROGRESS OVER TIME</div>
+        ${fields.map(f=>{
+          const vals=months.map(m=>{const d=meas.find(x=>x.month===m);return d&&d.data[f]?{month:m,val:parseFloat(d.data[f])}:null;}).filter(Boolean);
+          if(vals.length<2) return"";
+          const first=vals[vals.length-1].val,last=vals[0].val;
+          const diff=(last-first).toFixed(1);
+          const isGood=(f.includes("Weight")||f.includes("Waist")||f.includes("Hip"))?diff<0:diff>0;
+          return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="font-size:12px;color:#555;">${f}</span>
+            <div style="text-align:right;">
+              <span style="font-size:14px;font-weight:700;color:#1a1a1a;">${last}</span>
+              <span style="font-size:11px;margin-left:6px;font-weight:600;color:${isGood?"#2D9B6F":"#FF4D00"};">${diff>0?"+":""}${diff}</span>
+            </div>
+          </div>`;
+        }).join("")}
+      </div>`:""}
+    </div>`;
+  }
+
+  // WRIST
+  if(S.tab==="wrist"){
+    const wrist=getWrist();
+    const todayWrist=wrist.find(w=>w.date===todayStr());
+    html+=`<div style="padding:14px;">
+      <div style="font-size:18px;font-weight:800;color:#1a1a1a;margin-bottom:4px;">🦾 Wrist Pain Log</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:14px;">Track TFCC pain to show your physio</div>
+      <div class="card" style="margin-bottom:14px;border-color:#FF4D0022;">
+        <div style="font-size:12px;color:#888;margin-bottom:10px;font-weight:600;">📅 Today — ${fmtDate(todayStr())}</div>
+        <div style="font-size:12px;color:#888;margin-bottom:8px;">Pain level (0 = none, 5 = severe)</div>
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          ${[0,1,2,3,4,5].map(n=>{
+            const sel=todayWrist&&todayWrist.pain===n;
+            const c=n===0?"#2D9B6F":n<=2?"#E07800":n<=4?"#FF8C00":"#FF4D00";
+            return`<button style="flex:1;padding:10px 0;border-radius:8px;border:2px solid ${sel?c:"#e5e5e5"};background:${sel?c+"15":"#fff"};color:${sel?c:"#ccc"};font-size:14px;font-weight:700;" onclick="const w=getWrist().filter(x=>x.date!=='${todayStr()}');const cur=getWrist().find(x=>x.date==='${todayStr()}')||{date:'${todayStr()}',pain:0,note:''};cur.pain=${n};setWrist([...w,cur]);render();">${n}</button>`;
+          }).join("")}
+        </div>
+        <textarea style="width:100%;padding:9px;background:#f9f9f9;border:1.5px solid #eee;border-radius:9px;color:#333;font-size:12px;outline:none;resize:none;line-height:1.5;" rows="2"
+          placeholder="Notes e.g. hurts during lat pulldown..."
+          oninput="const w=getWrist().filter(x=>x.date!=='${todayStr()}');const cur=getWrist().find(x=>x.date==='${todayStr()}')||{date:'${todayStr()}',pain:0,note:''};cur.note=this.value;setWrist([...w,cur]);">${todayWrist?todayWrist.note:""}</textarea>
+      </div>
+      ${wrist.length>0?`
+      <div class="card">
+        <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:10px;">PAIN HISTORY</div>
+        ${wrist.sort((a,b)=>b.date.localeCompare(a.date)).slice(0,30).map(w=>{
+          const c=w.pain===0?"#2D9B6F":w.pain<=2?"#E07800":w.pain<=4?"#FF8C00":"#FF4D00";
+          return`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f5f5f5;">
+            <div style="width:30px;height:30px;border-radius:50%;background:${c}15;border:2px solid ${c};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${c};flex-shrink:0;">${w.pain}</div>
+            <div style="flex:1;">
+              <div style="font-size:11px;color:#888;font-weight:600;">${fmtDate(w.date)}</div>
+              ${w.note?`<div style="font-size:10px;color:#aaa;font-style:italic;">${w.note}</div>`:""}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>`:""}
+    </div>`;
+  }
+
   document.getElementById("app").innerHTML=html;
 }
-
 render();
 </script>
 </body>
