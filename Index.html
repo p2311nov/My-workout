@@ -114,7 +114,7 @@ const LOAD_STYLE={
 };
 
 const DAYS=Object.keys(PLAN);
-const TABS=["today","history","body","wrist"];
+const TABS=["today","history","form","body","wrist"];
 
 let timerInterval=null;
 let timerSec=0;
@@ -151,6 +151,7 @@ let S={
   showGrip:false,showLastSession:false,
   expandedNotes:{},histFilter:"All",
   saveMsg:"",measMonth:new Date().toISOString().slice(0,7),
+  formOpen:null,
 };
 
 function ls(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch{return fb;}}
@@ -364,7 +365,7 @@ function render(){
 
   let html=`<div class="top-nav">
     ${TABS.map(t=>{
-      const labels={"today":"📋 Workout","history":"📈 History","body":"📏 Body","wrist":"🦾 Wrist"};
+      const labels={"today":"📋 Workout","history":"📈 History","form":"📐 Form","body":"📏 Body","wrist":"🦾 Wrist"};
       return`<button class="nav-btn" style="border-bottom-color:${S.tab===t?dc:"transparent"};color:${S.tab===t?dc:"#999"};" onclick="S.tab='${t}';render();">${labels[t]}</button>`;
     }).join("")}
   </div>`;
@@ -597,6 +598,89 @@ function render(){
       });
     }
     html+=`</div>`;
+  }
+
+  // FORM GUIDE
+  if(S.tab==="form"){
+    const FORM_DATA=[
+      {day:"PUSH DAY",color:"#FF4D00",exercises:[
+        {name:"Barbell Bench Press",cues:["Y shape elbows — 45° not flared out","Shoulder blades squeezed together and pulled down before unracking","Feet flat on floor, slight arch in lower back","Bar touches lower chest, not neck","Press in a slight diagonal — not straight up"]},
+        {name:"Dumbbell Shoulder Press",cues:["Y shape — elbows slightly forward not to sides","Don't lock out at top — keep tension on muscle","Core tight, don't lean back excessively","Lower slowly, control the descent"]},
+        {name:"Incline Dumbbell Press",cues:["Same Y shape rule — elbows at 45°","30-45° incline only — too steep becomes shoulder press","Dumbbells meet at top but don't crash together"]},
+        {name:"Cable Fly (Low to High / High to Low)",cues:["Slight bend in elbow — never straight arm","Squeeze at the end like hugging a tree","Control the return — don't let cables snap back","Lean slightly forward"]},
+        {name:"Rope Pushdown",cues:["Elbows pinned to sides — don't let them flare or move","Only forearms move","Squeeze at the bottom for 1 second","Stand upright, don't hunch forward"]},
+        {name:"Overhead Tricep Extension",cues:["Elbows point straight up — don't let them flare out","Only forearms move, upper arms stay still","Full stretch at bottom, squeeze at top"]},
+        {name:"Lateral Raises",cues:["Slight bend in elbow throughout","Lead with your elbow not your hand","Don't shrug shoulders up — keep them depressed","Controlled slow descent — never swing or use momentum"]},
+      ]},
+      {day:"PULL DAY",color:"#0077CC",exercises:[
+        {name:"Deadlift",cues:["Neutral spine always — never round your back","Bar stays close to body — dragging up your shins","Push the floor away, don't think of pulling up","Hips and shoulders rise at same rate","Lock out by squeezing glutes at top","Use hooks — protect TFCC"]},
+        {name:"Lat Pulldown (Neutral Grip)",cues:["Lean back very slightly — 10-15° only","Pull to upper chest, never behind neck","Elbows drive down and back","Squeeze lats at bottom, full stretch at top","Don't let shoulders shrug up at top"]},
+        {name:"Seated Cable Row",cues:["Sit tall, chest up","Pull to belly button not chest","Squeeze shoulder blades together at end","Don't lean back excessively to cheat the weight","Slow controlled return"]},
+        {name:"Single Arm Dumbbell Row",cues:["Brace knee and hand on bench","Back flat and parallel to floor","Pull elbow straight up toward ceiling","Don't rotate torso to lift heavier","Full stretch at bottom"]},
+        {name:"Face Pulls",cues:["Pull to face level — not neck, not chest","Elbows stay high throughout","External rotate at end — thumbs point back","Health exercise — never go heavy"]},
+        {name:"Dumbbell Shrugs",cues:["Straight up and down movement only","Don't roll shoulders — causes injury","Hold at top 1-2 seconds","Full depression at bottom"]},
+        {name:"Bicep / Hammer / Preacher Curl",cues:["Elbows stay pinned to sides — don't swing","Full extension at bottom — don't cut the range","Squeeze at top","Slow on the way down — 2-3 seconds","Never use momentum or swing your back"]},
+      ]},
+      {day:"LEGS DAY",color:"#7B2FBE",exercises:[
+        {name:"Barbell Squat",cues:["Bar on upper traps, not neck","Feet shoulder width, toes slightly out","Knees track over toes — don't cave inward","Sit back and down like sitting on a chair","Chest up, don't lean too far forward","Go to parallel or below","Drive through heels to stand"]},
+        {name:"Romanian Deadlift",cues:["Soft bend in knees throughout","Push hips back — not down","Bar/dumbbells slide down thighs","Feel the hamstring stretch","Stop when lower back starts to round","Use hooks — protect TFCC"]},
+        {name:"Leg Press",cues:["Feet shoulder width, middle of platform","Don't let lower back peel off the seat","Never lock knees out at top","Full range — no half reps","Feet higher = more hamstring, lower = more quad"]},
+        {name:"Leg Curl",cues:["Don't let hips rise off the pad","Full extension at start","Squeeze hamstring at top","Slow controlled descent"]},
+        {name:"Leg Extension",cues:["Don't swing or use momentum","Squeeze quad at top for 1 second","Slow controlled descent","Avoid if you have knee issues"]},
+        {name:"Walking Lunges",cues:["Long enough step that front knee stays over ankle","Back knee hovers just above floor","Chest up, don't lean forward","Push through front heel to step forward"]},
+        {name:"Calf Raises",cues:["Full range — all the way up AND down","Pause at top and bottom","Don't bounce at the bottom","Slow and controlled beats heavy and bouncy"]},
+      ]},
+      {day:"GRIP WORK",color:"#2D9B6F",exercises:[
+        {name:"Dead Hangs",cues:["Full relaxed hang — let shoulders decompress","Don't actively engage anything","Breathe slowly and steadily"]},
+        {name:"Farmer's Carry",cues:["Stand tall, shoulders back","Wrist completely neutral — don't bend","Walk with controlled steps","Max 20kg given your TFCC"]},
+      ]},
+    ];
+
+    const universalCues=["Breathe out on the effort, in on the return","Never hold your breath","If form breaks — stop the set","Pain = stop immediately","Ego is the most common cause of injury"];
+
+    let S_form=S.formEx||null;
+
+    html+=`<div style="padding:14px;">
+      <div style="font-size:18px;font-weight:800;color:#1a1a1a;margin-bottom:4px;">📐 Form Guide</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:14px;">Tap any exercise to see form cues</div>
+
+      <!-- Universal rules -->
+      <div class="card" style="margin-bottom:14px;border-left:4px solid #FF4D00;">
+        <div style="font-size:11px;font-weight:700;color:#FF4D00;letter-spacing:2px;margin-bottom:8px;">UNIVERSAL RULES</div>
+        ${universalCues.map(c=>`
+          <div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f5f5f5;font-size:12px;color:#555;">
+            <span style="color:#FF4D00;flex-shrink:0;">→</span>${c}
+          </div>`).join("")}
+      </div>
+
+      <!-- Y shape highlight -->
+      <div style="background:#FFF8F0;border:1.5px solid #FF4D0033;border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:800;color:#FF4D00;margin-bottom:4px;">⚠️ Most Important Cue</div>
+        <div style="font-size:13px;font-weight:700;color:#333;margin-bottom:4px;">Make a Y shape, not a T shape</div>
+        <div style="font-size:12px;color:#888;line-height:1.6;">On ALL pressing movements — elbows at 45° forward, never flared out to the sides. This protects your shoulder joint and AC joint. Applies to bench press, shoulder press, incline press and push ups.</div>
+      </div>
+
+      ${FORM_DATA.map(group=>`
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:${group.color};letter-spacing:3px;margin-bottom:8px;padding-left:2px;">${group.day}</div>
+          ${group.exercises.map((ex,ei)=>{
+            const key=group.day+ei;
+            const isOpen=S.formOpen&&S.formOpen===key;
+            return`<div class="card" style="margin-bottom:8px;border-left:3px solid ${group.color}22;">
+              <button style="width:100%;background:none;border:none;text-align:left;padding:0;display:flex;justify-content:space-between;align-items:center;" onclick="S.formOpen=S.formOpen==='${key}'?null:'${key}';render();">
+                <div style="font-size:13px;font-weight:700;color:#1a1a1a;">${ex.name}</div>
+                <span style="color:${group.color};font-size:14px;flex-shrink:0;">${isOpen?"▲":"▼"}</span>
+              </button>
+              ${isOpen?`<div style="margin-top:10px;border-top:1px solid #f5f5f5;padding-top:10px;">
+                ${ex.cues.map(c=>`
+                  <div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid #f9f9f9;font-size:12px;color:#555;line-height:1.5;">
+                    <span style="color:${group.color};flex-shrink:0;font-weight:700;">→</span>${c}
+                  </div>`).join("")}
+              </div>`:""}
+            </div>`;
+          }).join("")}
+        </div>`).join("")}
+    </div>`;
   }
 
   // BODY
