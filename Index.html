@@ -281,8 +281,8 @@ function saveSession(){
   };
   let h=getHist().filter(x=>!(x.date===entry.date&&x.day===day));
   h=[entry,...h].slice(0,300); setHist(h);
-  S.saveMsg="Session saved! ✓";
-  setTimeout(()=>{S.saveMsg="";render();},2500);
+  S.saveMsg="✓ Session saved! Data backed up in 2 locations. Tip: Export CSV for permanent backup.";
+  setTimeout(()=>{S.saveMsg="";render();},3500);
   render();
 }
 
@@ -386,6 +386,7 @@ function render(){
       </div>
       <div style="margin-top:10px;height:4px;background:#e5e5e5;border-radius:2px;"><div style="height:100%;width:${pct}%;background:${dc};border-radius:2px;transition:width 0.3s;"></div></div>
       <div style="margin-top:8px;font-size:11px;color:#aaa;">📅 ${fmtDate(todayStr())}</div>
+      <button style="margin-top:10px;width:100%;padding:10px;background:#fff;border:1.5px solid ${dc}33;border-radius:10px;color:${dc};font-size:12px;font-weight:700;cursor:pointer;" onclick="refreshSessionData();">🔄 Clear Checkmarks & Session Note</button>
     </div>`;
 
     html+=`<div class="day-scroll">`;
@@ -487,7 +488,7 @@ function render(){
     // Total session volume
     let totalVol=0;
     plan.exercises.forEach((_,ei)=>totalVol+=calcExVol(S.day,ei));
-    GRIP.forEach((_,gi)=>totalVol+=calcGripVol(gi));
+    // NOTE: Grip work volume is NOT included in total session volume
     if(totalVol>0){
       html+=`<div class="section"><div class="card">
         <div style="font-size:10px;letter-spacing:3px;color:#aaa;margin-bottom:6px;">TOTAL SESSION VOLUME</div>
@@ -553,7 +554,7 @@ function render(){
         const hc=PLAN[h.day]?.color||"#888";
         const compEx=h.exercises.filter(e=>e.setsCompleted>0).length;
         const totalVol=h.exercises.reduce((acc,ex)=>{
-          if(!ex.sets) return acc;
+          if(!ex.sets||ex.isGrip) return acc; // Skip grip work
           return acc+ex.sets.filter(s=>s.done).reduce((a,s)=>{
             const w=parseFloat(s.weight)||0,r=parseFloat(s.reps)||0;
             return a+w*r*(ex.weightType==="per-hand"?2:1);
@@ -572,12 +573,12 @@ function render(){
           </div>
           <div style="padding:8px 14px;">`;
         h.exercises.forEach((ex,i)=>{
-          const exVol=ex.sets?ex.sets.filter(s=>s.done).reduce((a,s)=>{const w=parseFloat(s.weight)||0,r=parseFloat(s.reps)||0;return a+w*r*(ex.weightType==="per-hand"?2:1);},0):0;
+          const exVol=(!ex.isGrip&&ex.sets)?ex.sets.filter(s=>s.done).reduce((a,s)=>{const w=parseFloat(s.weight)||0,r=parseFloat(s.reps)||0;return a+w*r*(ex.weightType==="per-hand"?2:1);},0):0;
           html+=`<div style="padding:6px 0;border-bottom:${i<h.exercises.length-1?"1px solid #f5f5f5":"none"};">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <div style="font-size:12px;font-weight:700;color:${ex.setsCompleted>0?"#333":"#ccc"};">${ex.name}${ex.isGrip?` <span style="font-size:9px;color:#999;background:#f5f5f5;padding:1px 5px;border-radius:4px;">GRIP</span>`:""}</div>
               <div style="display:flex;gap:8px;align-items:center;">
-                ${exVol>0?`<span style="font-size:10px;color:${hc};font-weight:600;">${Math.round(exVol)}kg</span>`:""}
+                ${exVol>0&&!ex.isGrip?`<span style="font-size:10px;color:${hc};font-weight:600;">${Math.round(exVol)}kg</span>`:""}
                 <div style="font-size:10px;color:#aaa;">${ex.setsCompleted}/${ex.totalSets}</div>
               </div>
             </div>`;
@@ -768,6 +769,36 @@ function render(){
   document.getElementById("app").innerHTML=html;
 }
 
+function refreshSessionData(){
+  const day=S.day;
+  const plan=PLAN[day];
+  if(!plan) return;
+  
+  // Clear all completion checkmarks
+  const sess=getSess();
+  plan.exercises.forEach((_,ei)=>{
+    for(let si=0;si<_.sets;si++){
+      const k=`${day}__set__${ei}__${si}`;
+      delete sess[k];
+    }
+  });
+  
+  // Clear grip work checkmarks too
+  GRIP.forEach((_,gi)=>{
+    for(let si=0;si<_.sets;si++){
+      const k=`grip__set__${gi}__${si}`;
+      delete sess[k];
+    }
+  });
+  
+  setSess(sess);
+  
+  // Clear session note
+  setSN(day,"");
+  
+  render();
+}
+
 function recoverData(){
   const keys=['wt_h4','wt_h3','wt_h2','wt_hist2','wt_hist','wt_history','workout_history'];
   let all=[];
@@ -803,3 +834,4 @@ render();
 </script>
 </body>
 </html>
+
